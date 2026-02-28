@@ -6,100 +6,60 @@ namespace App\Controller;
 /**
  * Pokemons Controller
  *
+ * Administra la lógica de visualización y filtrado para el laboratorio.
+ *
  * @property \App\Model\Table\PokemonsTable $Pokemons
- * @method \App\Model\Entity\Pokemon[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class PokemonsController extends AppController
 {
     /**
-     * Index method
+     * Configuración de la paginación.
+     * Mostramos 10 por página para una lectura cómoda,
+     * pero permitimos navegar por los 50.
+     */
+    public $paginate = [
+        'limit' => 10,
+        'order' => [
+            'ext_id' => 'asc'
+        ]
+    ];
+
+    /**
+     * Método Index: El Dashboard Principal.
+     *
+     * Captura parámetros de la URL y los envía al buscador dinámico (Finder)
+     * definido en la PokemonsTable.
      *
      * @return \Cake\Http\Response|null|void Renders view
      */
     public function index()
     {
-        $pokemons = $this->paginate($this->Pokemons);
+        // 1. Recoger parámetros de búsqueda desde el Frontend (Query Params)
+        $filters = [
+            'min_weight' => $this->request->getQuery('min_weight'),
+            'max_weight' => $this->request->getQuery('max_weight'),
+            'type'       => $this->request->getQuery('type'),
+            'min_height' => $this->request->getQuery('min_height'),
+        ];
 
-        $this->set(compact('pokemons'));
+        // 2. Preparar la consulta usando el Finder dinámico 'oakAnalysis'
+        // Pasamos el array de filtros al modelo para que aplique el WHERE necesario.
+        $query = $this->Pokemons->find('oakAnalysis', $filters);
+
+        // 3. Ejecutar paginación con la consulta filtrada
+        $pokemons = $this->paginate($query);
+
+        // 4. Pasar los datos y los filtros actuales a la vista (para mantener los inputs llenos)
+        $this->set(compact('pokemons', 'filters'));
     }
 
     /**
-     * View method
-     *
-     * @param string|null $id Pokemon id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * Vista de detalle (Opcional para el laboratorio)
+     * Permite ver a fondo un espécimen sin posibilidad de editarlo.
      */
     public function view($id = null)
     {
-        $pokemon = $this->Pokemons->get($id, [
-            'contain' => [],
-        ]);
-
-        $this->set(compact('pokemon'));
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $pokemon = $this->Pokemons->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $pokemon = $this->Pokemons->patchEntity($pokemon, $this->request->getData());
-            if ($this->Pokemons->save($pokemon)) {
-                $this->Flash->success(__('The pokemon has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The pokemon could not be saved. Please, try again.'));
-        }
-        $this->set(compact('pokemon'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Pokemon id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $pokemon = $this->Pokemons->get($id, [
-            'contain' => [],
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $pokemon = $this->Pokemons->patchEntity($pokemon, $this->request->getData());
-            if ($this->Pokemons->save($pokemon)) {
-                $this->Flash->success(__('The pokemon has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The pokemon could not be saved. Please, try again.'));
-        }
-        $this->set(compact('pokemon'));
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Pokemon id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
         $pokemon = $this->Pokemons->get($id);
-        if ($this->Pokemons->delete($pokemon)) {
-            $this->Flash->success(__('The pokemon has been deleted.'));
-        } else {
-            $this->Flash->error(__('The pokemon could not be deleted. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'index']);
+        $this->set(compact('pokemon'));
     }
 }
