@@ -11,7 +11,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #e74c3c; margin-bottom: 20px;">
         <h3 style="color: #2c3e50; margin: 0;">🔬 Laboratorio Oak: Análisis Pokedex</h3>
         <span style="background: #ecf0f1; padding: 5px 15px; border-radius: 20px; font-weight: bold; color: #c0392b;">
-            Proyecto HP 2026
+
         </span>
     </div>
 
