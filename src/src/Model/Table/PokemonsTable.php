@@ -10,28 +10,11 @@ use Cake\Validation\Validator;
 
 /**
  * Pokemons Model
- *
- * @method \App\Model\Entity\Pokemon newEmptyEntity()
- * @method \App\Model\Entity\Pokemon newEntity(array $data, array $options = [])
- * @method \App\Model\Entity\Pokemon[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Pokemon get($primaryKey, $options = [])
- * @method \App\Model\Entity\Pokemon findOrCreate($search, ?callable $callback = null, $options = [])
- * @method \App\Model\Entity\Pokemon patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Pokemon[] patchEntities(iterable $entities, array $data, array $options = [])
- * @method \App\Model\Entity\Pokemon|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Pokemon saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Pokemon[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
- * @method \App\Model\Entity\Pokemon[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
- * @method \App\Model\Entity\Pokemon[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
- * @method \App\Model\Entity\Pokemon[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  */
 class PokemonsTable extends Table
 {
     /**
      * Initialize method
-     *
-     * @param array $config The configuration for the Table.
-     * @return void
      */
     public function initialize(array $config): void
     {
@@ -43,40 +26,65 @@ class PokemonsTable extends Table
     }
 
     /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
+     * Reglas de validación por defecto.
      */
     public function validationDefault(Validator $validator): Validator
     {
         $validator
             ->integer('ext_id')
-            ->requirePresence('ext_id', 'create')
             ->notEmptyString('ext_id');
 
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->requirePresence('name', 'create')
             ->notEmptyString('name');
 
         $validator
             ->scalar('types')
             ->maxLength('types', 255)
-            ->requirePresence('types', 'create')
             ->notEmptyString('types');
 
         $validator
             ->integer('height')
-            ->requirePresence('height', 'create')
             ->notEmptyString('height');
 
         $validator
             ->integer('weight')
-            ->requirePresence('weight', 'create')
             ->notEmptyString('weight');
 
         return $validator;
+    }
+
+    /**
+     * Buscador Dinámico para el Análisis de Oak.
+     *
+     * En lugar de valores fijos (hardcoded), este método recibe un array de opciones
+     * que vienen desde el controlador (y este a su vez del frontend).
+     *
+     * @param \Cake\ORM\Query $query La consulta base
+     * @param array $options Parámetros de filtrado (min_weight, max_weight, type, min_height)
+     * @return \Cake\ORM\Query
+     */
+    public function findOakAnalysis(Query $query, array $options): Query
+    {
+        // Filtro por Rango de Peso
+        if (!empty($options['min_weight'])) {
+            $query->where(['weight >' => (int)$options['min_weight']]);
+        }
+        if (!empty($options['max_weight'])) {
+            $query->where(['weight <' => (int)$options['max_weight']]);
+        }
+
+        // Filtro por Tipo (Búsqueda parcial en el string de tipos)
+        if (!empty($options['type'])) {
+            $query->where(['types LIKE' => '%' . $options['type'] . '%']);
+        }
+
+        // Filtro por Altura Mínima
+        if (!empty($options['min_height'])) {
+            $query->where(['height >' => (int)$options['min_height']]);
+        }
+
+        return $query;
     }
 }

@@ -14,16 +14,12 @@ use Cake\ORM\Entity;
  * @property string $types
  * @property int $height
  * @property int $weight
+ *
+ * @property string $inverted_name
  */
 class Pokemon extends Entity
 {
     /**
-     * Fields that can be mass assigned using newEntity() or patchEntity().
-     *
-     * Note that when '*' is set to true, this allows all unspecified fields to
-     * be mass assigned. For security purposes, it is advised to set '*' to false
-     * (or remove it), and explicitly make individual fields accessible as needed.
-     *
      * @var array<string, bool>
      */
     protected $_accessible = [
@@ -33,4 +29,14 @@ class Pokemon extends Entity
         'height' => true,
         'weight' => true,
     ];
+
+    /**
+     * @return string
+     */
+    protected function _getInvertedName(): string
+    {
+        // Campo Virtual
+        // Invertir el nombre (bulbasaur -> ruasablub)
+        return strrev($this->name);
+    }
 }
