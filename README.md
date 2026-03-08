@@ -9,7 +9,7 @@ Este proyecto es una infraestructura técnica diseñada para el laboratorio del 
 ---
 
 ## 💻 Requisitos Previos
--[Docker & Docker Compose](https://docs.docker.com/get-docker/)
+- [Docker & Docker Compose](https://docs.docker.com/get-docker/)
 - [Git](https://git-scm.com/)
 - **Make** (Preinstalado en Linux/Mac).
 
@@ -36,8 +36,8 @@ make start
 *Si estás en Linux y tienes problemas de permisos después de la instalación, ejecuta:* `make permissions`.
 
 ### 3. ¡Accede a tu Pokédex!
-Una vez que el comando termine y veas el mensaje de éxito en la terminal, abre tu navegador web y visita:
-👉 **http://localhost:8080**
+Una vez que el comando termine y veas el mensaje de éxito en la terminal, abre tu navegador web y visita la ruta principal de los Pokémon:
+👉 **http://localhost:8080/pokemons**
 
 ---
 
@@ -68,3 +68,10 @@ El sistema procesa y visualiza la Pokedex con los siguientes requerimientos:
   - `src/Controller/`: Gestión de peticiones y lógica de servidor.
   - `templates/`: Vistas de la Pokedex.
 - `Makefile`: Automatización de tareas de desarrollo.
+
+---
+
+## 🎉 ¡Mira tu Pokédex en Acción!
+Para poder ver la lista de los Pokémon importados y utilizar los filtros desarrollados para el Profesor Oak, debes ingresar desde tu navegador a la siguiente ruta exacta:
+
+👉 **[http://localhost:8080/pokemons](http://localhost:8080/pokemons)**
