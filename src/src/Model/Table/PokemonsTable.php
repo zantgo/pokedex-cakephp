@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -57,9 +56,10 @@ class PokemonsTable extends Table
 
     /**
      * Buscador Dinámico para el Análisis de Oak.
-     *
-     * En lugar de valores fijos (hardcoded), este método recibe un array de opciones
-     * que vienen desde el controlador (y este a su vez del frontend).
+     * 
+     * Recibe valores del usuario en unidades humanas (kg/cm) 
+     * y los convierte a las unidades de la PokeAPI (hg/dm) 
+     * para consultar la base de datos.
      *
      * @param \Cake\ORM\Query $query La consulta base
      * @param array $options Parámetros de filtrado (min_weight, max_weight, type, min_height)
@@ -67,22 +67,24 @@ class PokemonsTable extends Table
      */
     public function findOakAnalysis(Query $query, array $options): Query
     {
-        // Filtro por Rango de Peso
+        // 1. Filtro por Rango de Peso (User: kg -> DB: hg)
+        // 1 kg = 10 hg
         if (!empty($options['min_weight'])) {
-            $query->where(['weight >' => (int)$options['min_weight']]);
+            $query->where(['weight >' => (float)$options['min_weight'] * 10]);
         }
         if (!empty($options['max_weight'])) {
-            $query->where(['weight <' => (int)$options['max_weight']]);
+            $query->where(['weight <' => (float)$options['max_weight'] * 10]);
         }
 
-        // Filtro por Tipo (Búsqueda parcial en el string de tipos)
+        // 2. Filtro por Tipo (Búsqueda parcial en el string de tipos)
         if (!empty($options['type'])) {
             $query->where(['types LIKE' => '%' . $options['type'] . '%']);
         }
 
-        // Filtro por Altura Mínima
+        // 3. Filtro por Altura Mínima (User: cm -> DB: dm)
+        // 10 cm = 1 dm => cm / 10 = dm
         if (!empty($options['min_height'])) {
-            $query->where(['height >' => (int)$options['min_height']]);
+            $query->where(['height >' => (float)$options['min_height'] / 10]);
         }
 
         return $query;

@@ -3,80 +3,52 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\PokemonsController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
-/**
- * App\Controller\PokemonsController Test Case
- *
- * @uses \App\Controller\PokemonsController
- */
 class PokemonsControllerTest extends TestCase
 {
     use IntegrationTestTrait;
 
-    /**
-     * Fixtures
-     *
-     * @var array<string>
-     */
     protected $fixtures = [
         'app.Pokemons',
     ];
 
-    /**
-     * Test index method
-     *
-     * @return void
-     * @uses \App\Controller\PokemonsController::index()
-     */
-    public function testIndex(): void
+    public function testIndexRespondeOk(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/pokemons');
+        $this->assertResponseOk();
+        $this->assertResponseContains('Laboratorio Oak: Análisis Pokedex');
     }
 
-    /**
-     * Test view method
-     *
-     * @return void
-     * @uses \App\Controller\PokemonsController::view()
-     */
-    public function testView(): void
+    public function testFiltroTipoGrass(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->get('/pokemons?type=grass');
+
+        $this->assertResponseOk();
+
+        // Convertimos a array para poder usar acceso por índice [0]
+        $pokemons = $this->viewVariable('pokemons')->toArray();
+
+        $this->assertCount(1, $pokemons);
+        $this->assertEquals('bulbasaur', $pokemons[0]->name);
     }
 
-    /**
-     * Test add method
-     *
-     * @return void
-     * @uses \App\Controller\PokemonsController::add()
-     */
-    public function testAdd(): void
+    public function testFiltroRangoPeso(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        // Filtramos entre 5kg y 40kg.
+        // Fixtures: Bulbasaur(6.9kg), Pikachu(6kg), Butterfree(32kg).
+        $this->get('/pokemons?min_weight=5&max_weight=40');
+        $this->assertResponseOk();
 
-    /**
-     * Test edit method
-     *
-     * @return void
-     * @uses \App\Controller\PokemonsController::edit()
-     */
-    public function testEdit(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        $pokemons = $this->viewVariable('pokemons');
 
-    /**
-     * Test delete method
-     *
-     * @return void
-     * @uses \App\Controller\PokemonsController::delete()
-     */
-    public function testDelete(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        // El ResultSet es iterable, el foreach es seguro sin convertir
+        foreach ($pokemons as $p) {
+            $pesoKg = $p->weight / 10;
+
+            $this->assertGreaterThan(5, $pesoKg, "El peso de {$p->name} debería ser > 5kg");
+            $this->assertLessThan(40, $pesoKg, "El peso de {$p->name} debería ser < 40kg");
+        }
     }
 }

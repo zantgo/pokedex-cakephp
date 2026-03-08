@@ -1,5 +1,3 @@
-# Comandos de automatización para el Pokedex Challenge
-
 start: setup import ## Levanta el entorno e importa los datos automáticamente
 	@echo "=================================================="
 	@echo "🎉 ¡Todo listo! Tu Pokédex está funcionando."
@@ -9,8 +7,11 @@ start: setup import ## Levanta el entorno e importa los datos automáticamente
 setup: ## Levanta el entorno por primera vez
 	docker compose up -d --build
 	docker compose run --rm app composer install
-	@echo "⏳ Esperando 15 segundos a que la base de datos despierte..."
-	sleep 15
+	@echo "⏳ Esperando a que MariaDB inicie completamente..."
+	@while ! docker compose exec db mysqladmin ping -h"127.0.0.1" -uroot -psecret_password --silent; do \
+		sleep 2; \
+	done
+	@echo "✅ Base de datos lista. Ejecutando migraciones..."
 	docker compose run --rm app bin/cake migrations migrate
 
 import: ## Importa los 50 Pokémon de la PokeAPI
