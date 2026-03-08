@@ -72,6 +72,6 @@ El sistema procesa y visualiza la Pokedex con los siguientes requerimientos:
 ---
 
 ## 🎉 ¡Mira tu Pokédex en Acción!
-Para poder ver la lista de los Pokémon importados y utilizar los filtros desarrollados para el Profesor Oak, debes ingresar desde tu navegador a la siguiente ruta exacta:
+Para poder ver la lista de los Pokémon importados y utilizar los filtros desarrollados para el Profesor Oak, debes ingresar desde tu navegador a la siguiente ruta:
 
 👉 **[http://localhost:8080/pokemons](http://localhost:8080/pokemons)**
