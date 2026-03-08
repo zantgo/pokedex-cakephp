@@ -18,25 +18,33 @@
     <!-- BLOQUE 1: Filtros Dinámicos (El usuario define los valores) -->
     <div class="search-form" style="background: #fdfdfd; padding: 20px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 30px;">
         <h4 style="margin-top: 0; font-size: 1.1rem;">🔍 Búsqueda Avanzada de Especímenes</h4>
-        <?= $this->Form->create(null, ['type' => 'get', 'valueSources' => 'query']) ?>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end;">
+        <?= $this->Form->create(null,['type' => 'get', 'valueSources' => 'query']) ?>
 
-            <div>
-                <?= $this->Form->control('type', ['label' => 'Tipo (Ej: fire, water)', 'placeholder' => 'Tipo...']) ?>
+        <!-- FIX: Cambiado a Flexbox para evitar que los botones se salgan del borde -->
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+
+            <div style="flex: 1 1 140px;">
+                <?= $this->Form->control('type',['label' => 'Tipo', 'placeholder' => 'Tipo...']) ?>
             </div>
-            <div>
-                <?= $this->Form->control('min_weight', ['label' => 'Peso Mín (hg)', 'type' => 'number']) ?>
+            <div style="flex: 1 1 130px;">
+                <?= $this->Form->control('min_weight',['label' => 'Peso Mín (hg)', 'type' => 'number']) ?>
             </div>
-            <div>
+            <div style="flex: 1 1 130px;">
                 <?= $this->Form->control('max_weight', ['label' => 'Peso Máx (hg)', 'type' => 'number']) ?>
             </div>
-            <div>
-                <?= $this->Form->control('min_height', ['label' => 'Altura Mín (dm)', 'type' => 'number']) ?>
+            <div style="flex: 1 1 130px;">
+                <?= $this->Form->control('min_height',['label' => 'Altura Mín (dm)', 'type' => 'number']) ?>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <?= $this->Form->button(__('Analizar'), ['style' => 'background: #2980b9; border: none;']) ?>
-                <?= $this->Html->link(__('Limpiar'), ['action' => 'index'], ['class' => 'button outline', 'style' => 'color: #7f8c8d; border-color: #bdc3c7;']) ?>
+            <!-- FIX: Botones ajustables al ancho disponible -->
+            <div style="display: flex; gap: 10px; flex: 1 1 220px;">
+                <?= $this->Form->button(__('Analizar'), [
+                    'style' => 'background: #2980b9; color: #ffffff; border: none; flex: 1; padding: 0 10px;'
+                ]) ?>
+                <?= $this->Html->link(__('Limpiar'), ['action' => 'index'], [
+                    'class' => 'button', 
+                    'style' => 'background: #e74c3c; color: #ffffff; border: none; flex: 1; text-align: center; padding: 0 10px;'
+                ]) ?>
             </div>
         </div>
         <?= $this->Form->end() ?>
@@ -44,24 +52,21 @@
 
     <!-- BLOQUE 2: Accesos Directos - Requerimientos de Oak -->
     <div style="margin-bottom: 20px;">
-        <strong style="display: block; margin-bottom: 10px; color: #7f8c8d;">⚡ Filtros Rápidos del Desafío:</strong>
+        <!-- FIX: Texto actualizado solicitado -->
+        <strong style="display: block; margin-bottom: 10px; color: #7f8c8d;">Filtros Rápidos</strong>
 
         <!-- Requerimiento 1: Peso > 30 y < 80 -->
-        <?= $this->Html->link('1. Peso Oak (30-80)',
-            ['action' => 'index', '?' => ['min_weight' => 30, 'max_weight' => 80]],
-            ['class' => 'button', 'style' => 'background: #27ae60; margin-right: 5px; font-size: 0.8rem;'])
+        <?= $this->Html->link('1. Peso Oak (30-80)',['action' => 'index', '?' =>['min_weight' => 30, 'max_weight' => 80]],['class' => 'button', 'style' => 'background: #27ae60; margin-right: 5px; font-size: 0.8rem;'])
         ?>
 
         <!-- Requerimiento 2: Tipo Grass -->
         <?= $this->Html->link('2. Tipo: Grass',
-            ['action' => 'index', '?' => ['type' => 'grass']],
-            ['class' => 'button', 'style' => 'background: #2ecc71; margin-right: 5px; font-size: 0.8rem;'])
+            ['action' => 'index', '?' => ['type' => 'grass']],['class' => 'button', 'style' => 'background: #2ecc71; margin-right: 5px; font-size: 0.8rem;'])
         ?>
 
         <!-- Requerimiento 3: Flying y Altura > 10 -->
         <?= $this->Html->link('3. Flying High (>10)',
-            ['action' => 'index', '?' => ['type' => 'flying', 'min_height' => 10]],
-            ['class' => 'button', 'style' => 'background: #3498db; font-size: 0.8rem;'])
+            ['action' => 'index', '?' =>['type' => 'flying', 'min_height' => 10]],['class' => 'button', 'style' => 'background: #3498db; font-size: 0.8rem;'])
         ?>
     </div>
 
