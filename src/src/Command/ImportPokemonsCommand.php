@@ -32,7 +32,7 @@ class ImportPokemonsCommand extends Command
         $pokemonsTable->deleteAll([]);
 
         // 3. Configurar el cliente HTTP
-        $http = new Client();
+        $http = new Client(['timeout' => 30]);
 
         // 4. Bucle para obtener los primeros 50 Pokémon
         for ($i = 1; $i <= 50; $i++) {

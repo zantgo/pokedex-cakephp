@@ -1,4 +1,8 @@
-Este proyecto es una infraestructura técnica diseñada para el laboratorio del Profesor Oak. Permite analizar datos de la **PokeAPI**, persistirlos en una base de datos local y aplicar filtros avanzados de peso, tipo y dimensiones.
+# 🧪 Pokedex Analytics Infrastructure (CakePHP)
+
+Este proyecto es una infraestructura técnica diseñada para el laboratorio del Profesor Oak. Permite analizar datos de la **PokeAPI**, persistirlos en una base de datos local y aplicar filtros avanzados de peso, tipo y dimensiones, siguiendo un patrón MVC robusto y modular.
+
+---
 
 ## 🚀 Tecnologías y Arquitectura
 - **Framework:** CakePHP 4.x (PHP 7.4)
@@ -14,8 +18,8 @@ Este proyecto es una infraestructura técnica diseñada para el laboratorio del 
 - **Make** (Preinstalado en Linux/Mac).
 
 ### ⚠️ Nota para usuarios de Windows
-Este proyecto utiliza un `Makefile` y configuraciones de permisos basadas en Unix. Para una ejecución correcta en Windows, **es obligatorio el uso de [WSL2 (Windows Subsystem for Linux)](https://learn.microsoft.com/es-es/windows/wsl/install)**. 
-> No se recomienda el uso de PowerShell o CMD directamente para los comandos de automatización.
+Este proyecto utiliza un `Makefile` y scripts de bash para la automatización. Para una ejecución correcta en Windows, **es obligatorio el uso de [WSL2 (Windows Subsystem for Linux)](https://learn.microsoft.com/es-es/windows/wsl/install)**. 
+> No se recomienda el uso de PowerShell o CMD directamente para los comandos de automatización, ya que los permisos de archivos y los scripts de shell no son compatibles de forma nativa.
 
 ---
 
@@ -23,55 +27,66 @@ Este proyecto utiliza un `Makefile` y configuraciones de permisos basadas en Uni
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/zantgo/cakePHP-pokedex.git
-cd cakePHP-pokedex
+git clone https://github.com/zantgo/pokedex-cakephp.git
+cd pokedex-cakephp
 ```
 
 ### 2. Despliegue Rápido (Recomendado)
-Para hacer la instalación de manera automática, ejecuta el siguiente comando. Esto se encargará de levantar los contenedores, instalar dependencias, correr las migraciones de la base de datos e importar automáticamente los primeros 50 Pokémon:
+Ejecuta el siguiente comando para levantar los contenedores, instalar dependencias, realizar migraciones e importar la data inicial automáticamente:
 ```bash
 make start
 ```
-
-*Si estás en Linux y tienes problemas de permisos después de la instalación, ejecuta:* `make permissions`.
+*Si tienes problemas de permisos en Linux, ejecuta:* `make permissions`.
 
 ### 3. ¡Accede a tu Pokédex!
-Una vez que el comando termine y veas el mensaje de éxito en la terminal, abre tu navegador web y visita la ruta principal de los Pokémon:
+Una vez finalizado, visita en tu navegador:
 👉 **http://localhost:8080/pokemons**
 
 ---
 
-### ⚙️ Comandos Manuales (Alternativa)
-Si prefieres ejecutar el proceso paso a paso en lugar de usar `make start`, puedes usar los comandos individuales:
-- `make setup`: Levanta contenedores y prepara la base de datos.
-- `make import`: Consume la PokeAPI y guarda los Pokémon.
+## 📚 Documentación Técnica
+Para una comprensión profunda del sistema, consulta la carpeta `docs/`:
+- **[Arquitectura del Sistema](./docs/architecture.md)**: Detalle de capas y patrón MVC.
+- **[Modelo de Datos](./docs/data_model.md)**: Mutators, campos virtuales y esquema.
+- **[Estrategia de Testing](./docs/testing.md)**: Guía de pruebas unitarias y de integración.
 
 ---
 
-## 🔍 Funcionalidades del Desafío
+## 🧪 Aseguramiento de Calidad (QA)
+El proyecto incluye una suite de pruebas robusta ejecutada con PHPUnit. Para validar el sistema:
 
-El sistema procesa y visualiza la Pokedex con los siguientes requerimientos:
-
-1.  **Persistencia Local:** Los datos no se consultan a la API en cada carga, se sirven desde MariaDB tras la importación inicial.
-2.  **Filtro de Peso:** Identifica Pokémon con peso > 30 y < 80.
-3.  **Filtro de Tipo:** Identifica Pokémon de tipo `grass`.
-4.  **Filtro Combinado:** Identifica Pokémon tipo `flying` con altura > 10.
-5.  **Transformación (Inverted Name):** Una columna calculada que invierte el nombre del pokemon (ej: `bulbasaur` -> `ruasablub`).
+```bash
+docker compose run --rm app vendor/bin/phpunit
+```
 
 ---
 
-## 📁 Estructura del Proyecto
-- `docker/`: Configuraciones de los contenedores (Dockerfile).
-- `src/`: Código fuente de la aplicación CakePHP.
-  - `src/Command/`: Lógica de importación desde PokeAPI.
-  - `src/Model/`: Entidades y Tablas (Lógica de filtros y transformaciones).
-  - `src/Controller/`: Gestión de peticiones y lógica de servidor.
-  - `templates/`: Vistas de la Pokedex.
-- `Makefile`: Automatización de tareas de desarrollo.
+## 🔍 Funcionalidades
+1. **Persistencia Local:** Ingesta automática mediante comando CLI desde la PokeAPI.
+2. **Motor de Filtros:** Búsqueda dinámica basada en Finder `findOakAnalysis`.
+3. **Transformación (Mutators):** Cálculos dinámicos (nombre invertido, conversión unidades cm/kg) inyectados mediante Entidades.
+4. **UI Modular:** Uso de *Elements* de CakePHP (`filters.php`, `table.php`, `loader.php`) para mantener el código limpio.
+
+---
+
+## 📂 Estructura del Proyecto
+```text
+pokedex-cakephp/
+├── docker/                 # Configuración de contenedores (Dockerfile)
+├── docs/                   # Documentación modular (architecture, data_model, testing)
+├── src/                    # Código fuente de la aplicación CakePHP
+│   ├── bin/                # Ejecutables de CakePHP
+│   ├── config/             # Configuración (routes.php, app.php)
+│   ├── src/                # Lógica principal (Command, Controller, Model, View)
+│   ├── templates/          # Vistas y Elementos modulares
+│   ├── tests/              # Suite de pruebas (TestCase y Fixtures)
+│   └── webroot/            # Archivos públicos (CSS/IMG)
+├── Makefile                # Automatización (start, import, permissions)
+└── docker-compose.yml      # Orquestación de servicios
+```
 
 ---
 
 ## 🎉 ¡Mira tu Pokédex en Acción!
-Para poder ver la lista de los Pokémon importados y utilizar los filtros desarrollados para el Profesor Oak, debes ingresar desde tu navegador a la siguiente ruta exacta:
-
+Para ver la lista de Pokémon importados y utilizar los filtros, ingresa a:
 👉 **[http://localhost:8080/pokemons](http://localhost:8080/pokemons)**

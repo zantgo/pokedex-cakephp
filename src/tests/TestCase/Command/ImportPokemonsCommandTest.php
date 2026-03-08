@@ -3,48 +3,65 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Command;
 
-use App\Command\ImportPokemonsCommand;
-use Cake\TestSuite\ConsoleIntegrationTestTrait;
+use Cake\Console\TestSuite\ConsoleIntegrationTestTrait;
 use Cake\TestSuite\TestCase;
+use Cake\Http\Client;
+// CORRECCIÓN: Usar el Response del Client, no el del Server
+use Cake\Http\Client\Response;
 
-/**
- * App\Command\ImportPokemonsCommand Test Case
- *
- * @uses \App\Command\ImportPokemonsCommand
- */
 class ImportPokemonsCommandTest extends TestCase
 {
     use ConsoleIntegrationTestTrait;
 
-    /**
-     * setUp method
-     *
-     * @return void
-     */
-    protected function setUp(): void
+    protected $fixtures =[
+        'app.Pokemons',
+    ];
+
+    public function setUp(): void
     {
         parent::setUp();
         $this->useCommandRunner();
     }
-    /**
-     * Test buildOptionParser method
-     *
-     * @return void
-     * @uses \App\Command\ImportPokemonsCommand::buildOptionParser()
-     */
-    public function testBuildOptionParser(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
 
-    /**
-     * Test execute method
-     *
-     * @return void
-     * @uses \App\Command\ImportPokemonsCommand::execute()
-     */
-    public function testExecute(): void
+    public function testExecuteHaceLlamadasAlApiGuardaDatos(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // 1. Preparamos respuestas simuladas (Mocks)
+        $jsonResponse = json_encode([
+            'id' => 25,
+            'name' => 'pikachu',
+            'height' => 4,
+            'weight' => 60,
+            'types' =>[
+                ['type' =>['name' => 'electric']]
+            ]
+        ]);
+
+        // Usando el array de configuración correcto para el Client\Response
+        $mockResponse = new Response([], $jsonResponse);
+        $mockResponse = $mockResponse->withStatus(200);
+
+        Client::addMockResponse('GET', 'https://pokeapi.co/api/v2/pokemon/1', $mockResponse);
+
+        // Mockeamos la 2 hasta la 50 con errores (404)
+        $notFoundResponse = (new Response([]))->withStatus(404);
+        for ($i = 2; $i <= 50; $i++) {
+             Client::addMockResponse('GET', "https://pokeapi.co/api/v2/pokemon/{$i}", $notFoundResponse);
+        }
+
+        // 2. Ejecutamos el comando
+        $this->exec('import_pokemons');
+
+        // 3. Aserciones de Consola
+        $this->assertExitCode(0);
+        $this->assertOutputContains('Iniciando conexión con PokeAPI');
+        $this->assertOutputContains('[#1] pikachu guardado.');
+
+        // 4. Aserciones de Base de Datos
+        $pokemonsTable = $this->getTableLocator()->get('Pokemons');
+        $pikachu = $pokemonsTable->find()->where(['name' => 'pikachu'])->first();
+
+        $this->assertNotNull($pikachu);
+        $this->assertEquals(60, $pikachu->weight);
+        $this->assertEquals('electric', $pikachu->types);
     }
 }
