@@ -48,7 +48,7 @@ Si prefieres ejecutar el proceso paso a paso en lugar de usar `make start`, pued
 
 ---
 
-## 🔍 Funcionalidades del Desafío
+## 🔍 Funcionalidades
 
 El sistema procesa y visualiza la Pokedex con los siguientes requerimientos:
 
