@@ -52,12 +52,10 @@ Para una comprensión profunda del sistema, consulta la carpeta `docs/`:
 
 ---
 
-<<<<<<< HEAD
 ## 🧪 Aseguramiento de Calidad (QA)
 El proyecto incluye una suite de pruebas robusta ejecutada con PHPUnit. Para validar el sistema:
-=======
+
 ## 🔍 Funcionalidades
->>>>>>> b3ca9f253a8f0f1f853a20b43a81d7a7acd5ecf9
 
 ```bash
 docker compose run --rm app vendor/bin/phpunit
